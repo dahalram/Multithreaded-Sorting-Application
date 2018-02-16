@@ -9,6 +9,40 @@ typedef struct {
 } Array;
 
 void merge(int arr[], int left, int right, int mid) {
+	int first_half = mid - left +1;
+	int second_half = right - mid;
+	int first[first_half];
+	int last[second_half];
+
+	for (int i = 0; i < first_half; i++) {
+		first[i] = arr[left+i];
+	} 
+
+	for (int j = 0; j < second_half; j++) {
+		last[j] = arr[mid+1+j];
+	}
+
+	int i = 0; j = 0, k = left;
+	while (i < first_half && j < second_half) {
+		if (first[i] <= last[j]) {
+			arr[k] = first[i];
+			i++;		
+		} else {
+			arr[k] = second[j];
+			j++;
+		}
+		k++;
+	}
+
+	while (i < first_half) {
+		arr[k] = first[i];
+		i++; k++;
+	}
+
+	while (j < second_half) {
+		arr[k] = second[j];
+		j++; k++;	
+	}
 
 }
 
@@ -46,7 +80,7 @@ int *readfile(char *filename) {
 int main(int argc, char *argv[]) {
 	// Create threads
 	FILE *file;
-	file = fopen("input.txt", "r");
+	//file = fopen("input.txt", "r");
 
 	char *f = argv[1];
 	int *arr = readfile(f);
