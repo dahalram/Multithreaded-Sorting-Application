@@ -11,11 +11,12 @@ struct arrnum{
 };
 
 int *arr;
+
 void merge(int left, int right, int mid) {
 	int first_half = mid - left +1;
 	int second_half = right - mid;
-	int first[first_half];
-	int last[second_half];
+	int *first = malloc(first_half * sizeof(int));
+	int *last = malloc(second_half * sizeof(int));
 	
 	int i, j;
 	for (i = 0; i < first_half; i++) {
@@ -54,10 +55,10 @@ void merge(int left, int right, int mid) {
 
 void mergesort(int left, int right) {
 	if (left < right) {
-		int mid = (left + (right -1))/2;
+		int mid = (left + right)/2;
 		mergesort(left, mid);
 		mergesort(mid+1, right);
-		merge(left, mid, right);
+		merge(left, right, mid);
 	}
 }
 
@@ -79,7 +80,7 @@ void *helper(void *param) {
 		mergesort(tmp->low, tmp->high);
 	} else {
 		int mid = (tmp->low + tmp->high)/2;
-		merge(tmp->low, mid, tmp->high);
+		merge(tmp->low, tmp->high, mid);
 	}
 	//pthread_exit(0);
 	//return 0;
@@ -90,9 +91,6 @@ void *helper(void *param) {
 int main(int argc, char *argv[]) {
 	// Create threads
 	FILE *file;
-	//file = fopen("input.txt", "r");
-
-	//char *f = argv[1];
 	file = fopen(argv[1], "r");
 	char *nums = NULL;
 	size_t len = 0;
@@ -119,7 +117,7 @@ int main(int argc, char *argv[]) {
 
 	struct arrnum t_a;
 	t_a.low = 0;
-	t_a.high = (n/2);
+	t_a.high = n/2;
 	t_a.is_st = 1;
 	printf("\nFirst thread has the following numbers: \n");
 	for (i = 0; i <= t_a.high; i++) {
