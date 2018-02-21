@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
 	//file = fopen("input.txt", "r");
 
 	char *f = argv[1];
-	int *arr = readfile(f);
+	arr = readfile(f);
 
 	pthread_t thread_a;
 	pthread_t thread_b;
