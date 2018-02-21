@@ -52,37 +52,15 @@ void merge(int left, int right, int mid) {
 
 }
 
-void mergesort(int arr[], int left, int right) {
+void mergesort(int left, int right) {
 	if (left < right) {
 		int mid = (left + (right -1))/2;
-		mergesort(arr, left, mid);
-		mergesort(arr, mid+1, right);
+		mergesort(left, mid);
+		mergesort(mid+1, right);
 		merge(left, mid, right);
 	}
 }
 
-int *readfile(char *filename) {
-	FILE *file;
-	file = fopen(filename, "rt");
-	char line[80];
-	int len = 0;
-	while (fgets(line, 80, file) != NULL) {
-		len += 1;
-	}
-	
-	int i = 0, j;
-	int *inp = malloc(len*sizeof(int));
-
-	while (fgets(line, 80, file) != NULL) {
-		sscanf(line, "%d", &j);
-		inp[i] = j;
-		i++;
-	}
-	fclose(file);
-
-	return inp;
-	
-}
 
 /*
 int print_contents(int arr[]) {
@@ -97,10 +75,10 @@ int print_contents(int arr[]) {
 
 void *helper(void *param) {
 	struct arrnum *tmp = param;
-	if (tmp.is_st == 1) {
+	if (tmp->is_st == 1) {
 		mergesort(tmp->low, tmp->high);
 	} else {
-		int mid = (tmp->low + tmp->end)/2;
+		int mid = (tmp->low + tmp->high)/2;
 		merge(tmp->low, mid, tmp->high);
 	}
 	//pthread_exit(0);
@@ -114,23 +92,48 @@ int main(int argc, char *argv[]) {
 	FILE *file;
 	//file = fopen("input.txt", "r");
 
-	char *f = argv[1];
-	arr = readfile(f);
-	int n = sizeof(arr)/sizeof(arr[0]);
+	//char *f = argv[1];
+	file = fopen(argv[1], "r");
+	char *nums = NULL;
+	size_t len = 0;
+	int n = -1;
+	ssize_t line;
+	while ((line = getline(&nums, &len, file)) != -1) {
+		n++;
+	}
+	
+	arr = malloc(n*sizeof(int));
+	file = fopen(argv[1], "r");
+	printf("The original input numbers are: \n");
+	int i = 0;
+	while ((line = getline(&nums, &len, file)) != -1) {
+		arr[i] = atoi(nums);
+		i++;
+		printf("%s", nums);
+	}
+
 
 	pthread_t thread_a;
 	pthread_t thread_b;
 	pthread_t thread_ab;
 
 	struct arrnum t_a;
-	t_a.low = 0
+	t_a.low = 0;
 	t_a.high = (n/2);
 	t_a.is_st = 1;
+	printf("\nFirst thread has the following numbers: \n");
+	for (i = 0; i <= t_a.high; i++) {
+		printf("%d ", arr[i]);
+	}
 
 	struct arrnum t_b;
 	t_b.low = (n/2) + 1;
 	t_b.high = n;
 	t_b.is_st = 1;
+	printf("\nSecond thread has the following numbers: \n");
+	for (i = t_b.low; i <= t_b.high; i++) {
+		printf("%d ", arr[i]);
+	}
 
 	struct arrnum t_ab;
 	t_ab.low = 0;
@@ -147,6 +150,11 @@ int main(int argc, char *argv[]) {
 	pthread_create(&thread_ab, NULL, helper, &t_ab);
 	pthread_join(thread_ab, NULL);
 
+	printf("\nThe final sorted array is: \n");
+	for (i = 0; i <= n; i++) {
+		printf("%d ", arr[i]);
+	}
+	printf("\n");
 	pthread_exit(0);
 
 	return 0;
