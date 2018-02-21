@@ -1,0 +1,14 @@
+4.16 
+Answer:
+The Linux Kernel uses a process model (i.e. it provides a lightweight process framework for creating threads). The implementation of thread is in the user space. In Windows, threads are the basic units of execution and one or more threads run in the context of the process. 
+
+Kernel-level threads are implemented in the kernel using tables where each task gets a table of threads. The kernel schedules each thread within the time of the each process execution time. Even though kernel-level threads might perform equally well as user-level threads in Linux there might be some overhead with switching kernel-level threads with user-level threads. Another idea is that Linux can either entirely use user-level or entirely kernel-level threads or combination of both. Kernel-level threads are less likely to monopolize the time allocation. Depending on the implementation, the process can take advantage of extra processors, SMPs, etc. 
+
+
+4.18
+Answer:
+a. When the number of kernel threads allocated to the program is less than the number of processors, some of the processors would remain idle since the scheduler maps the kernel threads to processors but not the user-level threads (to processors). 
+
+b. When there are equal number of kernel threads and processors, then it is likely that all of the processors are utilized simultaneously (except in case that a kernel-thread might block inside the kernel due to page fault, the corresponding processor would remain idle). 
+
+c. When the number of kernel threads is greater than that of the processors, a blocked kernel thread could potentially be swapped out in favor of a kernel thread that is ready to execute (helping to increase the utilization of the multi processor system). 
