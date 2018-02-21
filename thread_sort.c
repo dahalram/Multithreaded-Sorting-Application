@@ -3,15 +3,15 @@
 #include <stdio.h>
 #include <string.h>
 
-/*
-typedef struct {
+
+struct arrnum{
 	int low;
 	int high;
-} Array;
-*/
+	int is_st;
+};
 
 int *arr;
-void merge(int arr[], int left, int right, int mid) {
+void merge(int left, int right, int mid) {
 	int first_half = mid - left +1;
 	int second_half = right - mid;
 	int first[first_half];
@@ -57,6 +57,7 @@ void mergesort(int arr[], int left, int right) {
 		int mid = (left + (right -1))/2;
 		mergesort(arr, left, mid);
 		mergesort(arr, mid+1, right);
+		merge(left, mid, right);
 	}
 }
 
@@ -83,6 +84,7 @@ int *readfile(char *filename) {
 	
 }
 
+/*
 int print_contents(int arr[]) {
 	int i = 0;
 	int n = sizeof(arr)/sizeof(arr[0]);
@@ -91,22 +93,17 @@ int print_contents(int arr[]) {
 	}
 	return 0;	
 }
+*/
 
 void *helper(void *param) {
-	int n = sizeof(arr)/sizeof(arr[0]);
-	int mid = n/2;
-	if (strcmp(param, "a") == 0) {
-		mergesort(arr, 0, mid);
+	struct arrnum *tmp = param;
+	if (tmp.is_st == 1) {
+		mergesort(tmp->low, tmp->high);
+	} else {
+		int mid = (tmp->low + tmp->end)/2;
+		merge(tmp->low, mid, tmp->high);
 	}
-
-	if (strcmp(param, "b") == 0) {
-		mergesort(arr, mid+1, n-1);
-	}
-
-	if (strcmp(param, "ab") == 0) {
-		merge(arr, 0, mid, n-1);
-	}
-	pthread_exit(0);
+	//pthread_exit(0);
 	//return 0;
 
 }
@@ -119,27 +116,35 @@ int main(int argc, char *argv[]) {
 
 	char *f = argv[1];
 	arr = readfile(f);
+	int n = sizeof(arr)/sizeof(arr[0]);
 
 	pthread_t thread_a;
 	pthread_t thread_b;
 	pthread_t thread_ab;
 
-	pthread_attr_t attr_a;
-	pthread_attr_t attr_b;
-	pthread_attr_t attr_ab;
+	struct arrnum t_a;
+	t_a.low = 0
+	t_a.high = (n/2);
+	t_a.is_st = 1;
 
-	pthread_attr_init(&attr_a);
-	pthread_create(&thread_a, &attr_a, helper, "a");
+	struct arrnum t_b;
+	t_b.low = (n/2) + 1;
+	t_b.high = n;
+	t_b.is_st = 1;
 
-	pthread_attr_init(&attr_b);
-	pthread_create(&thread_b, &attr_b, helper, "b");
+	struct arrnum t_ab;
+	t_ab.low = 0;
+	t_ab.high = n;
+	t_ab.is_st = 0;
 
-	pthread_attr_init(&attr_ab);
-	pthread_create(&thread_ab, &attr_ab, helper, "ab");
+	pthread_create(&thread_a, NULL, helper, &t_a);
+	pthread_create(&thread_b, NULL, helper, &t_b);
 	
 	//pthread_create(&thread, NULL, mergesort, &arr);
 	pthread_join(thread_a, NULL);
 	pthread_join(thread_b, NULL);
+
+	pthread_create(&thread_ab, NULL, helper, &t_ab);
 	pthread_join(thread_ab, NULL);
 
 	pthread_exit(0);
