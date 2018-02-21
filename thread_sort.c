@@ -19,6 +19,7 @@ void merge(int left, int right, int mid) {
 	int *last = malloc(second_half * sizeof(int));
 	
 	int i, j;
+	// Fill the two arrays with nums 
 	for (i = 0; i < first_half; i++) {
 		first[i] = arr[left+i];
 	} 
@@ -41,6 +42,7 @@ void merge(int left, int right, int mid) {
 		k++;
 	}
 
+	// Check the length of a array and merge
 	while (i < first_half) {
 		arr[k] = first[i];
 		i++; k++;
@@ -89,6 +91,7 @@ void *helper(void *param) {
 
 
 int main(int argc, char *argv[]) {
+	// Read the file and read in the input into an array
 	// Create threads
 	FILE *file;
 	file = fopen(argv[1], "r");
@@ -110,11 +113,12 @@ int main(int argc, char *argv[]) {
 		printf("%s", nums);
 	}
 
-
+	// Initialize the threads
 	pthread_t thread_a;
 	pthread_t thread_b;
 	pthread_t thread_ab;
-
+	
+	// Divide the array into two and assign them values
 	struct arrnum t_a;
 	t_a.low = 0;
 	t_a.high = n/2;
@@ -133,6 +137,7 @@ int main(int argc, char *argv[]) {
 		printf("%d ", arr[i]);
 	}
 
+	// Do mering for the third thread
 	struct arrnum t_ab;
 	t_ab.low = 0;
 	t_ab.high = n;
